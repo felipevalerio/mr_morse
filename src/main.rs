@@ -1,6 +1,6 @@
-mod sine_wave;
 use std::collections::HashMap;
-
+mod sine_wave;
+use crate::sine_wave::create_sine_wave;
 
 fn main() {
     
@@ -17,6 +17,7 @@ fn main() {
     ]);
 
     let mut duration: f32;
+    let buffer = [0u8; 4];
     let phrase = "SOS";
     let mut string_encoded: Vec<&str> = Vec::new();
 
@@ -37,10 +38,10 @@ fn main() {
         
         if code == "." {
             duration = 0.1;
-            sine_wave::sine_wave(duration);
+            create_sine_wave(duration, buffer);
         } else if code == "-" {
             duration = 0.3;
-            sine_wave::sine_wave(duration);
+            create_sine_wave(duration, buffer);
         }
     }
 

@@ -8,10 +8,10 @@ const FREQUENCY: f32 = 440.0;
 const SAMPLE_RATE: f32 = 44100.0;
 
 
-pub fn sine_wave(duration: f32) {
+pub fn create_sine_wave(duration: f32, mut buffer: [u8; 4]) {
+	print!("Passei por aqui :)");
 
 	let num_samples = (SAMPLE_RATE * duration) as usize;
-	let mut buffer = [0u8; 4];
 
 	let mut data_file = fs::OpenOptions::new()
 		.append(true)
