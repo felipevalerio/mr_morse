@@ -35,14 +35,19 @@ fn main() {
     }
 
     for code in string_encoded {
-        
-        if code == "." {
-            duration = 0.1;
-            create_sine_wave(duration, buffer);
-        } else if code == "-" {
-            duration = 0.3;
-            create_sine_wave(duration, buffer);
+        print!("{} ", code);
+
+        for symbol in code.chars() {
+
+            if symbol == '.' {
+                duration = 0.1;
+                create_sine_wave(duration, buffer);
+            } else if symbol == '-' {
+                duration = 0.3;
+                create_sine_wave(duration, buffer);
+            }
         }
+        
     }
 
 

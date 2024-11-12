@@ -9,14 +9,13 @@ const SAMPLE_RATE: f32 = 44100.0;
 
 
 pub fn create_sine_wave(duration: f32, mut buffer: [u8; 4]) {
-	print!("Passei por aqui :)");
-
-	let num_samples = (SAMPLE_RATE * duration) as usize;
 
 	let mut data_file = fs::OpenOptions::new()
 		.append(true)
 		.open("out.bin")
 		.expect("erro na abertura do arquivo");
+
+	let num_samples = (SAMPLE_RATE * duration) as usize;
 
 	for i in 0..num_samples {
 		let sample = AMPLITUDE * (2.0 * PI * FREQUENCY * i as f32 / SAMPLE_RATE).sin();
