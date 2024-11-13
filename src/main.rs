@@ -1,8 +1,8 @@
-use std::collections::HashMap;
+use std::{collections::HashMap, fs::File, io::BufWriter};
 mod sine_wave;
-use crate::sine_wave::create_sine_wave;
+use crate::sine_wave::{create_sine_wave, silence_bet};
 
-fn main() {
+fn main() -> std::io::Result<()> {
     
     let morse_code = HashMap::from([
             ("A", ".-"), ("B", "-..."), ("C", "-.-."), ("D", "-.."),
@@ -15,13 +15,27 @@ fn main() {
             ("3", "...--"), ("4", "....-"), ("5", "....."), ("6", "-...."),
             ("7", "--...."), ("8", "---.."), ("9", "----."), ("0", "-----")
     ]);
+    
 
-    let mut duration: f32;
-    let buffer = [0u8; 4];
+    // variáveis para a definição de tempo para pontos, traços e de silêncio
+    let dot_duration: f32 = 0.1;
+    let dash_duration: f32 = dot_duration * 3.0;
+    let silence_duration = dot_duration;
+    let space_duration = dot_duration * 7.0;
+    
+    // frase e codificação para morse
     let phrase = "SOS";
+    let phrase_uppercase = phrase.to_uppercase();
     let mut string_encoded: Vec<&str> = Vec::new();
 
-    for letter in phrase.chars() {
+    // cria um arquivo binário
+    let file = File::create("sine_wave.bin").unwrap();
+    let mut writer = BufWriter::new(file);
+
+
+
+
+    for letter in phrase_uppercase.chars() {
 
         let key: String = letter.to_string();
         let key_str = key.as_str();
@@ -34,21 +48,24 @@ fn main() {
         }
     }
 
+
     for code in string_encoded {
         print!("{} ", code);
 
         for symbol in code.chars() {
 
-            if symbol == '.' {
-                duration = 0.1;
-                create_sine_wave(duration, buffer);
-            } else if symbol == '-' {
-                duration = 0.3;
-                create_sine_wave(duration, buffer);
+            match symbol {
+                '.' => create_sine_wave(&mut writer, dot_duration)?,
+                '-' => create_sine_wave(&mut writer, dash_duration)?,
+                _=> (),
             }
+            let _ = silence_bet(&mut writer, silence_duration);
         }
         
     }
 
+    let _ = silence_bet(&mut writer, space_duration);
 
+
+    Ok(())
 }

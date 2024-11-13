@@ -1,25 +1,34 @@
-use std::fs;
-use std::io::Write;
+use std::fs::File;
+use std::io::{BufWriter, Write};
 use std::f32::consts::PI;
 
 
-const AMPLITUDE: f32 = 0.5;
+// const AMPLITUDE: f32 = 1.0;
 const FREQUENCY: f32 = 440.0;
 const SAMPLE_RATE: f32 = 44100.0;
 
 
-pub fn create_sine_wave(duration: f32, mut buffer: [u8; 4]) {
-
-	let mut data_file = fs::OpenOptions::new()
-		.append(true)
-		.open("out.bin")
-		.expect("erro na abertura do arquivo");
+pub fn create_sine_wave(writer: &mut BufWriter<File>, duration: f32) -> std::io::Result<()> {
 
 	let num_samples = (SAMPLE_RATE * duration) as usize;
 
 	for i in 0..num_samples {
-		let sample = AMPLITUDE * (2.0 * PI * FREQUENCY * i as f32 / SAMPLE_RATE).sin();
-		buffer.copy_from_slice(&sample.to_le_bytes());
-		data_file.write(&buffer).expect("erro");
+		let sample = (2.0 * PI * FREQUENCY * i as f32 / SAMPLE_RATE).sin();
+		let int_sample = (sample * i16::MAX as f32) as i16;
+		writer.write_all(&int_sample.to_le_bytes())?;
 	}
+
+	Ok(())
+}
+
+
+pub fn silence_bet(writer: &mut BufWriter<File>, duration: f32) -> std::io::Result<()> {
+
+	let num_samples = (SAMPLE_RATE * duration) as usize;
+
+	for _ in 0..num_samples {
+		writer.write_all(&0i16.to_le_bytes())?;
+	}
+
+	Ok(())
 }
