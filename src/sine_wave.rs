@@ -1,6 +1,7 @@
 use std::fs::File;
 use std::io::{BufWriter, Write};
 use std::f32::consts::PI;
+use std::i16::MAX;
 
 
 // const AMPLITUDE: f32 = 1.0;
@@ -14,7 +15,7 @@ pub fn create_sine_wave(writer: &mut BufWriter<File>, duration: f32) -> std::io:
 
 	for i in 0..num_samples {
 		let sample = (2.0 * PI * FREQUENCY * i as f32 / SAMPLE_RATE).sin();
-		let int_sample = (sample * i16::MAX as f32) as i16;
+		let int_sample = (sample * MAX as f32) as i16;
 		writer.write_all(&int_sample.to_le_bytes())?;
 	}
 
