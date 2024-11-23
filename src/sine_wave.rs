@@ -39,23 +39,10 @@ pub fn silence_periods(writer: &mut BufWriter<File>, duration: f32) -> std::io::
 	Ok(())
 }
 
-
-fn raw_pcm_format(buffer: Vec<u8>) -> SamplesBuffer<i16> {
-
-	
-	// Converter os bytes lidos em amostras de i16 (áudio 16-bit)
-	let samples: Vec<i16> = buffer
-		.chunks_exact(BYTES_PER_SAMPLE)
-		.map(|chunk| i16::from_le_bytes([chunk[0], chunk[1]]))
-		.collect();
-	
-	// Criar uma fonte a partir do buffer de amostras
-	let source = SamplesBuffer::new(CHANNELS as u16, SAMPLE_RATE as u32, samples.clone());
-
-	source
-}
-
-
+// como estou trabalhando um arquivo PCM bruto, sem headers nem nada, apenas os dados
+// é preciso passar alguns parâmetros para a repodução, como channels (Mono), bytes_per_sample (2)
+// frequencia 44100
+// as mesmas informações são passadas para o comando ffplay (ffplay -f s16le -ar 44100 sine_wave.bin)
 pub fn play_audio() {
 
 	// inicia o stream de audio
@@ -66,7 +53,14 @@ pub fn play_audio() {
 	let mut buffer = Vec::new();
 	file.read_to_end(&mut buffer).unwrap();
 
-	let source = raw_pcm_format(buffer);
+	// Converter os bytes lidos em amostras de i16 (áudio 16-bit)
+	let samples: Vec<i16> = buffer
+		.chunks_exact(BYTES_PER_SAMPLE)
+		.map(|chunk| i16::from_le_bytes([chunk[0], chunk[1]]))
+		.collect();
+	
+	// Criar uma fonte a partir do buffer de amostras
+	let source = SamplesBuffer::new(CHANNELS as u16, SAMPLE_RATE as u32, samples.clone());
 
 	// calcula a duração do aúdio
 	// total de samples / (sample_rate (frequencia 44100) * channels (1 ou seja Mono))
